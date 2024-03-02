@@ -17,7 +17,12 @@ app.use(cookieParser())
 
 
 
+import userRouter from './routes/user.routes.js'
 
+
+// router middleware
+
+app.use("/api/v1/users",userRouter)
 
 
 
