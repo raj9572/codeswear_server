@@ -30,3 +30,17 @@ export const verifyJWT = async (req, res, next) => {
     }
 
 }
+
+
+
+export const fetchAdminAccess = (roles = [])=>{
+    return function(req,res,next){
+        if(!req.user){
+            return res.status(401).json(ErrorResponse(401,"Invalid access token"))
+        }
+        if(!roles.includes(req.user.role)){
+            return res.status(400).json(ErrorResponse(400,"you are not authenticated"))
+        }
+        next()
+    }
+}

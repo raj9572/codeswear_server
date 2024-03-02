@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { verifyJWT } from "../middleware/auth.middleware.js";
+import { fetchAdminAccess, verifyJWT } from "../middleware/auth.middleware.js";
 import {
     createProduct,
     deleteProduct,
@@ -14,12 +14,13 @@ const router = Router()
 
 
 
-router.route("/add-product").post(verifyJWT, createProduct)
 router.route("/all-products").post(verifyJWT, getAllProducts)
 router.route("/product-details").post(verifyJWT, getProductInfo)
-router.route("/update-product").post(verifyJWT, updateProduct)
-router.route("/delete-product").post(verifyJWT, deleteProduct)
 
+// admin route
+router.route("/add-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]), createProduct)
+router.route("/update-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]), updateProduct)
+router.route("/delete-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]), deleteProduct)
 
 
 
