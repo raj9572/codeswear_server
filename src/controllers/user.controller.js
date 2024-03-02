@@ -295,18 +295,17 @@ const updateAccountDetails = asyncHandler(async(req,res)=>{
     if (!fullName || !email) {
         return res.status(400).json(400,"All fields are required")
     }
-
-    const user = User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set: {
-                fullName,
-                email: email
-            }
-        },
-        { new: true }
-    ).select("-password -refreshToken")
-
+     const user = await User.findByIdAndUpdate(
+         req.user?._id,
+         {
+             $set: {
+                 fullName,
+                 email: email
+                }
+            },
+            { new: true }
+            ).select("-password -refreshToken")
+            
     return res.status(200)
         .json(SucessResponse(200, user, "Account Details Updated Successfully"))
 
