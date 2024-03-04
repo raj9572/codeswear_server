@@ -3,7 +3,7 @@ import mongoose,{Schema} from 'mongoose'
 
 
 const productSchema = new Schema({
-    productName:{
+    title:{
      type:String,
      required:true
     },
@@ -18,8 +18,8 @@ const productSchema = new Schema({
      required:true
     },
     productImage:{
-     type:String,
-     required:true
+     publicId:String,
+     url:String,
     },
     description:{
      type:String,

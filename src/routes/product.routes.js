@@ -5,8 +5,10 @@ import {
     deleteProduct,
     getAllProducts,
     getProductInfo,
-    updateProduct
+    updateProductImage,
+    updateProductdetails
 } from "../controllers/product.controller.js";
+import { upload } from "../middleware/multer.middleware.js";
 
 
 
@@ -14,13 +16,14 @@ const router = Router()
 
 
 
-router.route("/all-products").post(verifyJWT, getAllProducts)
-router.route("/product-details").post(verifyJWT, getProductInfo)
+router.route("/all-products").get(verifyJWT, getAllProducts)
+router.route("/:productId").get(verifyJWT, getProductInfo)
 
 // admin route
-router.route("/add-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]), createProduct)
-router.route("/update-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]), updateProduct)
-router.route("/delete-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]), deleteProduct)
+router.route("/add-product").post(verifyJWT,fetchAdminAccess(["ADMIN"]),upload.single("productImage"),createProduct)
+router.route("/update-product/:productId").patch(verifyJWT,fetchAdminAccess(["ADMIN"]), updateProductdetails)
+router.route("/update-product-image/:productId").patch(verifyJWT,fetchAdminAccess(["ADMIN"]),upload.single("productImage"), updateProductImage)
+router.route("/delete-product").delete(verifyJWT,fetchAdminAccess(["ADMIN"]), deleteProduct)
 
 
 

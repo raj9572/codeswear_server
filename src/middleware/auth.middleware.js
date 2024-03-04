@@ -38,7 +38,7 @@ export const fetchAdminAccess = (roles = [])=>{
         if(!req.user){
             return res.status(401).json(ErrorResponse(401,"Invalid access token"))
         }
-        if(!roles.includes(req.user.role)){
+        if(!roles.includes(req.user.isAdmin)){
             return res.status(400).json(ErrorResponse(400,"you are not authenticated"))
         }
         next()
