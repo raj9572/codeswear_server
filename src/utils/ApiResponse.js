@@ -4,7 +4,7 @@
 
 const SucessResponse = (statusCode,data,message)=>{
         return {
-            status:"okk",
+            status:"ok",
             data,
             statusCode,
             message:message ? message : "success"
