@@ -312,6 +312,19 @@ const updateAccountDetails = asyncHandler(async(req,res)=>{
 })
 
 
+const getAllUsers = asyncHandler(async(req,res)=>{
+
+    const users = await User.find({})
+
+    if(!users){
+        return res.status(404).json(ErrorResponse(404,"Users Not Found"))
+    }
+
+    return res.status(200)
+    .json(SucessResponse(200,users,"user fetched successfully"))
+
+})
+
 
 
 

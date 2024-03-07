@@ -24,6 +24,10 @@ const productSchema = new Schema({
     description:{
      type:String,
      required:true
+    },
+    isTop:{
+        type:Boolean,
+        default:false
     }
  
  
