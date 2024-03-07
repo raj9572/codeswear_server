@@ -153,7 +153,7 @@ const updateProductImage = asyncHandler(async(req,res)=>{
     )
     
     if(!updatedProduct){
-        return res.status(404).json(ErrorResponse(404,"Product not found"))
+        return res.status(404).json(ErrorResponse(404,"Product not Updated"))
     }
 
      return res.status(200)
@@ -167,6 +167,8 @@ const updateProductImage = asyncHandler(async(req,res)=>{
 
 
 const deleteProduct = asyncHandler(async(req,res)=>{
+
+    // this controller is not professionalyy user deleteSingleProduct
         const {productId} = req.body
         if(!productId){
          return res.status(400).json(ErrorResponse(400,"product Id is required"))
@@ -233,6 +235,71 @@ const getProductByCategory = asyncHandler(async(req,res)=>{
 })
 
 
+const deleteSingleProduct = asyncHandler(async(req,res)=>{
+     const productId = req.params.productId
+
+     const product = await Product.findById(productId)
+
+     if(!product){
+        return res.status(404)
+        json(ErrorResponse(404,"Prouct Not Found"))
+     }
+
+     const deleteImageofProductFromCloudinary = await deleteOnCloudinary(product.productImage.publicId)
+
+     const deletedProduct = await Product.findByIdAndDelete(product._id)
+
+    return res.status(209)
+    .json(SucessResponse(209,deletedProduct,"deleted Image Successfully"))
+
+})
+
+
+
+const updatingProductDetails = asyncHandler(async(req,res)=>{
+       const productId = req.params.productId
+        const {title, description,category,price,small,medium,large,extralarge} = req.body
+        const productImageLocal = req.file?.path
+      
+        const product = await Product.findById(productId)
+
+        if(!product){
+            return res.status(404)
+            .json(ErrorResponse(404,"product Not Found"))
+        }
+
+        let productImage
+
+        if(productImageLocal){
+             productImage = await uploadOnCloudinary(productImageLocal)
+               await deleteOnCloudinary(product.productImage.publicId)
+        }
+
+        if(!productImage?.url){
+            return res.status(400)
+            .json(ErrorResponse(400,"error in uploading image on cloudinary url"))
+        }
+
+        if(title) product.title = title
+        if(description) product.description = description
+        if(category) product.category = category
+        if(price) product.price = price
+        if(small) product.prices[0]["S"] = small
+        if(medium) product.prices[0]["M"] = medium
+        if(large) product.prices[0]["L"] = large
+        if(extralarge) product.prices[0]["XL"] = extralarge
+
+        if(productImage?.url){
+            product.productImage.url = productImage.url
+            product.productImage.publicId = productImage.public_id
+        }
+        
+        await product.save({validateBeforeSave:false})
+
+        return res.status(209)
+        .json(SucessResponse(209,{},"product Updated successfully"))
+      
+})
 
 
 
@@ -246,5 +313,7 @@ export {
     updateProductImage,
     deleteProduct,
     getTopProduct,
-    getProductByCategory
+    getProductByCategory,
+    deleteSingleProduct,
+    updatingProductDetails
 }
