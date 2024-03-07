@@ -327,6 +327,65 @@ const getAllUsers = asyncHandler(async(req,res)=>{
 
 
 
+const deleteUser = asyncHandler(async (req,res)=>{
+       const userId = req.params.userId
+
+       const user = await User.findById(userId)
+       
+       if(!user){
+        return res.status(404)
+        .json(ErrorResponse(404,"user Not Found"))
+       }
+
+       const deletedUser = await User.findByIdAndDelete(user._id)
+
+       console.log(deletedUser)
+
+       return res.status(200)
+       .json(SucessResponse(200,deletedUser,"user delete successfully"))
+
+
+})
+
+
+const makeUserAdmin = asyncHandler(async(req,res)=>{
+        const userId = req.params.userId
+
+        const user = await User.findById(userId)
+
+        if(!user){
+            return res.status(404)
+            .json(ErrorResponse(404,"user Not Found"))
+        }
+
+        if(user.isAdmin === "ADMIN"){
+            user.isAdmin = "NORMAL"
+        }  else{
+            user.isAdmin = "ADMIN"
+        }
+        
+
+        const updateAdminuser = await user.save({validateBeforeSave:false})
+
+        return res.status(203)
+        .json(SucessResponse(203,updateAdminuser,"user updated successfully"))
+        // if(!userId){
+        //     return res.status(400)
+        //     .json(ErrorResponse(400,"userId is required"))
+        // }
+
+        // const user = await User.findByIdAndUpdate(user._id,
+        //        {
+        //          $set:{
+        //             isAdmin:"Admin"
+        //         }
+        //        }
+        //     )
+
+        
+
+})
+
 
 
 
@@ -337,5 +396,8 @@ export {
     refreshAccessToken,
     updateCurrentPassword,
     getCurrentUser,
-    updateAccountDetails
+    updateAccountDetails,
+    getAllUsers,
+    deleteUser,
+    makeUserAdmin
 }
