@@ -1,4 +1,4 @@
-import mongoose,{Schema} from 'mongoose'
+import mongoose,{Schema, SchemaType} from 'mongoose'
 
 
 
@@ -14,7 +14,8 @@ const productSchema = new Schema({
         required:true
     },
     category:{
-     type:String,
+     type:Schema.Types.ObjectId,
+     ref:"Category",
      required:true
     },
     productImage:{

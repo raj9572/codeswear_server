@@ -1,3 +1,4 @@
+import { Category } from "../models/category.model.js";
 import { Product } from "../models/product.model.js";
 import { ErrorResponse, SucessResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -22,10 +23,17 @@ const createProduct = asyncHandler(async(req,res)=>{
       if(!productImage?.url){
         return res.status(400).json(ErrorResponse(400,"Error while uploading on cloudinary"))
       }
+
+      const categoryItem = await Category.find({category:category})
+      
+      if(!categoryItem){
+        return res.status(400)
+        .json(ErrorResponse(400,"category is not create for this product"))
+      }
       const product = await Product.create({
         title,description,price,
         varients: ["S", "M", "L","XL"],
-        category : category?.toLowerCase(),
+        category : categoryItem[0]?._id,
         productImage:{
               publicId : productImage?.public_id,
               url:productImage?.url
