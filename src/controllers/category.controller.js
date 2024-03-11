@@ -46,10 +46,52 @@ const createCategory = asyncHandler(async(req,res)=>{
 
 
 
+const fetchCategoryProduct = asyncHandler(async(req,res)=>{
+     const {category} = req.params
 
+     if(!category){
+        return res.status(400).json(ErrorResponse(404,"this category not Found"))
+     }
+
+     const CategoryItem = await Category.aggregate([
+        {
+            $match:{
+                category:category?.toLowerCase()
+            }
+        },
+
+        {
+            $lookup:{
+                from: "products",
+                localField: "_id",
+                foreignField: "category",
+                as: "category_product"
+            }
+        },
+
+        {
+            $project:{
+                category_product:1
+            }
+        }
+
+     ])
+
+
+     if(!CategoryItem.length){
+        return res.status(404).json(ErrorResponse(404,"Category Item not Found"))
+     }
+
+
+    return res.status(200).json({CategoryItem:CategoryItem[0]})
+
+
+
+})
 
 
 
 export {
-    createCategory
+    createCategory,
+    fetchCategoryProduct
 }

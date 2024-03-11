@@ -63,7 +63,7 @@ const createProduct = asyncHandler(async(req,res)=>{
 
 
 const getAllProducts = asyncHandler(async(req,res)=>{
-       const products = await Product.find({})
+       const products = await Product.find({}).populate("category")
        return res.status(200)
        .json(SucessResponse(
         200,
@@ -71,10 +71,6 @@ const getAllProducts = asyncHandler(async(req,res)=>{
         "all product list is feted"
        ))
 })
-
-
-
-
 
 
 const getTopProduct = asyncHandler(async(req,res)=>{
@@ -198,8 +194,8 @@ const deleteProduct = asyncHandler(async(req,res)=>{
 const getProductInfo = asyncHandler(async(req,res)=>{
     const productId = req.params.productId
 
-    const product = await Product.findById(productId)
-
+    const product = await Product.findById(productId).populate("category")
+    console.log(product)
     if(!product){
         return res.status(404).json(ErrorResponse(404,"product not found"))
     }
@@ -212,12 +208,16 @@ const getProductInfo = asyncHandler(async(req,res)=>{
 })
 
 const getProductByCategory = asyncHandler(async(req,res)=>{
-     const {category,sort} = req.query
+     let {category,sort} = req.query
      console.log(req.query)
      let queryObject = {}
 
         if (category) {
-            queryObject.category = category
+            const categoryItem = await Category.findOne({category:category})
+            if(!categoryItem){
+                return res.status(404).json(ErrorResponse("404","this category not Found "))
+            }
+            queryObject.category = categoryItem._id
         }
 
         let apiData = Product.find(queryObject)
