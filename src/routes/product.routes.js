@@ -23,7 +23,7 @@ const router = Router()
 router.route("/all-products").get(verifyJWT, getAllProducts)
 router.route("/testcreateproduct").post(verifyJWT, upload.single("productImage"), getTopProduct)
 router.route("/:productId").get(verifyJWT, getProductInfo)
-router.route("/filter/categories").get(verifyJWT, getProductByCategory)
+// router.route("/filter/categories").get(verifyJWT, getProductByCategory)
 
 
 // admin route

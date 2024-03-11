@@ -11,7 +11,7 @@ const router = Router()
 
 
 
-router.route("/category-product/:category").get(verifyJWT,fetchCategoryProduct)
+router.route("/category-product").get(verifyJWT,fetchCategoryProduct)
 
 
 
