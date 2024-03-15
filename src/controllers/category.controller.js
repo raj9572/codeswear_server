@@ -180,7 +180,19 @@ const fetchCategoryProduct = asyncHandler(async (req, res) => {
 
 
 
+const fetchAllCategory = asyncHandler(async(req,res)=>{
+        const category = await Category.find({})
+
+        if(!category){
+            return res.status(404).json(ErrorResponse(404,"Category not Found"))
+        }
+
+        return res.status(200).json(SucessResponse(200,category,"category Found"))
+})
+
+
 export {
     createCategory,
-    fetchCategoryProduct
+    fetchCategoryProduct,
+    fetchAllCategory
 }
