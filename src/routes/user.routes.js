@@ -29,9 +29,9 @@ router.route("/change-password").post(verifyJWT, updateCurrentPassword)
 router.route("/update-account").patch(verifyJWT, updateAccountDetails)
 
 // admin route
-router.route("/getallusers").get(verifyJWT,fetchAdminAccess(["ADMIN"]), getAllUsers)
-router.route("/:userId").delete(verifyJWT,fetchAdminAccess(["ADMIN"]), deleteUser)
-router.route("/:userId").patch(verifyJWT,fetchAdminAccess(["ADMIN"]), makeUserAdmin)
+router.route("/getallusers").get(verifyJWT, fetchAdminAccess(["ADMIN"]), getAllUsers)
+router.route("/:userId").delete(verifyJWT, fetchAdminAccess(["ADMIN"]), deleteUser)
+router.route("/:userId").patch(verifyJWT, fetchAdminAccess(["ADMIN"]), makeUserAdmin)
 
 
 

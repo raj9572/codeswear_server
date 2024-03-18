@@ -21,12 +21,14 @@ app.use(cookieParser())
 import userRouter from './routes/user.routes.js'
 import productRoute from './routes/product.routes.js'
 import categoryRoute from './routes/category.routes.js'
+import orderRoute from './routes/order.routes.js'
 
 // router middleware
 
 app.use("/api/v1/users",userRouter)
 app.use("/api/v1/products",productRoute)
 app.use("/api/v1/categories",categoryRoute)
+app.use("/api/v1/orders",orderRoute)
 
 
 
