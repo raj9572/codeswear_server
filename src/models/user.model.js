@@ -39,7 +39,13 @@ const userSchema = new Schema({
     isAdmin: {
         type: String,
         default: "NORMAL"
-    }
+    },
+    wishlist: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref:"Product"
+        }
+    ]
 
 
 

@@ -10,7 +10,10 @@ import {
     getTopProduct,
     getProductByCategory,
     deleteSingleProduct,
-    updatingProductDetails
+    updatingProductDetails,
+    getSearchProduct,
+    WishlistProduct,
+    getWishListProducts
 } from "../controllers/product.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 
@@ -23,6 +26,9 @@ const router = Router()
 router.route("/all-products").get(verifyJWT, getAllProducts)
 router.route("/testcreateproduct").post(verifyJWT, upload.single("productImage"), getTopProduct)
 router.route("/:productId").get(verifyJWT, getProductInfo)
+router.route("/search/:query").get(verifyJWT, getSearchProduct)
+router.route("/wishlist/:productId").get(verifyJWT, WishlistProduct)
+router.route("/getwishlist/wishlistproducts").get(verifyJWT, getWishListProducts)
 // router.route("/filter/categories").get(verifyJWT, getProductByCategory)
 
 

@@ -125,7 +125,7 @@ const CheckSessionStatus = asyncHandler(async(req,res)=>{
     await  newOrder.save()
 
 
-    let customer = await Customer.findOne({customer:customerInfo.userId})
+    let customer = await Customer.findOne({userId:customerInfo.userId})
      
     if(customer){
         customer.orders.push(newOrder._id)
