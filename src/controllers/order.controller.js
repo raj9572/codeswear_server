@@ -4,6 +4,7 @@ import { ErrorResponse, SucessResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import stripe from 'stripe';
 import {format} from 'date-fns'
+import { Product } from "../models/product.model.js";
 
 const stripeInstance = stripe('sk_test_51Mh7qiSFVs0Xzc6RvPqwVysDYzA3gwI2BTqO4wp27QJwh2OlTbiHALOmCqgB166Qo619Yg7Ct1qxlLtVoMkJmup3009nGYqZe1');
 
@@ -158,12 +159,56 @@ const getAllOrders = asyncHandler(async(req,res)=>{
         return res.status(200).json(SucessResponse(200,orderDetails,""))
 })
 
-const AllCustomer = asyncHandler(async(req,res)=>{
-    const customers = await Customer.find().sort({createdAt:"desc"})
 
-    
+const getOrderDetails = asyncHandler(async(req,res)=>{
+        const {orderId} = req.params
+        // console.log(orderId)
+        const orderDetails = await Order.findById(orderId).populate({
+            path:"products.productId",
+            model: Product
+        })
+
+        // console.log(orderDetails)
+
+        if(!orderDetails){
+            return res.status(404).json(ErrorResponse(404,"order Not Found"))
+        }
+
+        const customer = await Customer.findOne({userId : orderDetails.userId})
+        if(!customer){
+            return res.status(404).json(ErrorResponse(404,"customer Not found"))
+        }
+
+        return res.status(200).json(SucessResponse(200,[orderDetails,customer],""))
 })
 
+
+const AllCustomer = asyncHandler(async(req,res)=>{
+    const customers = await Customer.find({}).sort({createdAt:"desc"})
+    // console.log('customers',customers)
+    return res.status(200).json(SucessResponse(200,customers,""))
+})
+
+
+
+const fetchMyOrders = asyncHandler(async(req,res)=>{
+
+    const orders = await Order.find({userId:req.user?._id}).sort({createdAt:"desc"})
+
+    const orderList = orders?.map((order)=>{
+        return {
+            _id:order._id,
+            transactionId:order.transactionId,
+            products:order.products.length,
+            totalAmount:order.totalAmount,
+            createdAt: format(order.createdAt,"MMM do,yyyy")
+        }
+    })
+
+    return res.status(200).json(SucessResponse(200,orderList,""))
+
+
+})
 
 
 
@@ -175,5 +220,7 @@ export {
     placeOrderItems,
     CheckSessionStatus,
     getAllOrders,
-    AllCustomer
+    AllCustomer,
+    getOrderDetails,
+    fetchMyOrders
 }
