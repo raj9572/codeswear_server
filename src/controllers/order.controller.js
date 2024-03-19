@@ -1,7 +1,9 @@
 import { Customer } from "../models/customer.model.js";
 import { Order } from "../models/order.model.js";
+import { ErrorResponse, SucessResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import stripe from 'stripe';
+import {format} from 'date-fns'
 
 const stripeInstance = stripe('sk_test_51Mh7qiSFVs0Xzc6RvPqwVysDYzA3gwI2BTqO4wp27QJwh2OlTbiHALOmCqgB166Qo619Yg7Ct1qxlLtVoMkJmup3009nGYqZe1');
 
@@ -9,6 +11,7 @@ const stripeInstance = stripe('sk_test_51Mh7qiSFVs0Xzc6RvPqwVysDYzA3gwI2BTqO4wp2
 
 const placeOrderItems = asyncHandler(async(req,res)=>{
     const {cartItems,user} = req.body
+    console.log(req.body)
     const line_items = cartItems.map((item) => {
         return {
             price_data: {
@@ -29,7 +32,7 @@ const placeOrderItems = asyncHandler(async(req,res)=>{
         }
     })
 
-
+   console.log("line_items",line_items)
     try {
         const session = await stripeInstance.checkout.sessions.create({
             ui_mode: 'embedded',
@@ -48,32 +51,36 @@ const placeOrderItems = asyncHandler(async(req,res)=>{
             },
             client_reference_id:user._id,
 
-            return_url: `http://localhost:5173/return?session_id={CHECKOUT_SESSION_ID}`,
+            return_url: `http://localhost:3000/return?session_id={CHECKOUT_SESSION_ID}`,
         });
 
 
-        res.send({ clientSecret: session.client_secret })
+        res.json(SucessResponse(400, session.client_secret,"" ))
+
     } catch (error) {
-        console.log('error', error)
-        res.status(400).json({ message: "something went wronge", error: error })
+        if (error instanceof stripe.errors.StripeInvalidRequestError) {
+            console.error('StripeInvalidRequestError:', error.message);
+            return res.status(400).json(ErrorResponse(400,error.message))
+            // Handle the error appropriately (e.g., display a user-friendly message)
+          } else {
+            console.error('Error:', error);
+            return res.status(400).json(ErrorResponse(400,error))
+
+            // Handle other types of errors
+          }
     }
 
 })
-
-
-
-
-
 
 const CheckSessionStatus = asyncHandler(async(req,res)=>{
     const { session_id } = req.query
 
     const session = await stripeInstance.checkout.sessions.retrieve(session_id);
 
-    console.log("sessionId", session)
+    // console.log("sessionId", session)
 
     let customerInfo = {
-        customer:session?.client_reference_id,
+        userId:session?.client_reference_id,
         name: session.customer_details.name,
         email: session.customer_details.email,
     }
@@ -106,6 +113,7 @@ const CheckSessionStatus = asyncHandler(async(req,res)=>{
     }
 
     const newOrder = new Order({
+        userId:customerInfo.userId,
         transactionId:session?.payment_intent,
         products:orderItems,
         shippingAddress,
@@ -116,8 +124,8 @@ const CheckSessionStatus = asyncHandler(async(req,res)=>{
     await  newOrder.save()
 
 
-    let customer = await Customer.findOne({customer:customerInfo.customer})
-
+    let customer = await Customer.findOne({customer:customerInfo.userId})
+     
     if(customer){
         customer.orders.push(newOrder._id)
     } else{
@@ -125,13 +133,35 @@ const CheckSessionStatus = asyncHandler(async(req,res)=>{
             ...customerInfo,
             orders:[newOrder._id]
         })
-
-        await customer.save()
     }
+
+    await customer.save()
     
-    res.send({
-        status: session.status,
-    });
+    res.json(SucessResponse(200,session.status,""));
+})
+
+
+const getAllOrders = asyncHandler(async(req,res)=>{
+        const orders = await Order.find().sort({createdAt : "desc"})
+
+        const orderDetails = await Promise.all(orders?.map(async(order)=>{
+            const customer = await Customer.findOne({userId:order.userId})
+            return {
+                _id:order._id,
+                customer : customer.name,
+                products : order.products.length,
+                totalAmount:order.totalAmount,
+                createdAt: format(order.createdAt,"MMM do,yyyy")
+            }
+        }))
+
+        return res.status(200).json(SucessResponse(200,orderDetails,""))
+})
+
+const AllCustomer = asyncHandler(async(req,res)=>{
+    const customers = await Customer.find().sort({createdAt:"desc"})
+
+    
 })
 
 
@@ -143,5 +173,7 @@ const CheckSessionStatus = asyncHandler(async(req,res)=>{
 
 export {
     placeOrderItems,
-    CheckSessionStatus
+    CheckSessionStatus,
+    getAllOrders,
+    AllCustomer
 }
