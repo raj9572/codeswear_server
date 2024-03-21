@@ -291,24 +291,45 @@ const getCurrentUser = asyncHandler(async(req,res)=>{
 
 
 const updateAccountDetails = asyncHandler(async(req,res)=>{
-    const { fullName, email } = req.body
+    // console.log(req.body)
+    const { fullName, email,username } = req.body
 
-    if (!fullName || !email) {
-        return res.status(400).json(400,"All fields are required")
+    if (!fullName && !email && !username) {
+        return res.status(400).json(ErrorResponse(400,"Atlease one fields are required"))
     }
-     const user = await User.findByIdAndUpdate(
-         req.user?._id,
-         {
-             $set: {
-                 fullName,
-                 email: email
-                }
-            },
-            { new: true }
-            ).select("-password -refreshToken")
+
+    let user = await User.findById(req.user?._id)
+
+    if(email){
+        const existUser = await User.findOne({email:email})
+        if(existUser){
+        return res.status(403).json(ErrorResponse(403,"email already exist"))
+        }
+
+        user.email = email
+
+     }
+
+    if(username){
+        const existUser = await User.findOne({username:username})
+        if(existUser){
+        return res.status(403).json(ErrorResponse(403,"username already exist"))
+        }
+
+        user.username = username
+    }
+
+    if(fullName){
+        user.fullName = fullName
+    }
+
+
+   const updatedUser = await user.save({validateBeforeSave:false})
+
+     
             
     return res.status(200)
-        .json(SucessResponse(200, user, "Account Details Updated Successfully"))
+        .json(SucessResponse(200, updatedUser, "Account Details Updated Successfully"))
 
 })
 
