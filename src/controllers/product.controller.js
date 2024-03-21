@@ -196,15 +196,61 @@ const getProductInfo = asyncHandler(async (req, res) => {
     const productId = req.params.productId
 
     const product = await Product.findById(productId).populate("category")
-    console.log(product)
+    // console.log(product)
     if (!product) {
         return res.status(404).json(ErrorResponse(404, "product not found"))
     }
 
+    const reletedProducts = await Product.find({
+        category: product.category._id,
+        _id: { $ne: product._id }
+    }).populate("category")
+
+    // console.log(categoryReletedProducts)
+
+    // const reletedProducts = await Category.aggregate([
+    //     {
+    //         $match:{
+    //             _id:product.category._id
+    //         }
+    //     },
+
+    //     {
+    //         $lookup:{
+    //             from:"products",
+    //             localField:"_id",
+    //             foreignField:"category",
+    //              as:"category_product",
+    //              pipeline:[
+    //                 {
+    //                     $lookup:{
+    //                         from:"categories",
+    //                         localField:"category",
+    //                         foreignField:"_id",
+    //                         as:"populated_category",
+                            
+    //                     },
+
+    //                 },
+    //                 {
+    //                     $project:{
+    //                         category_products:"$populated_category"
+    //                     }
+    //                 }
+    //              ]
+    //         }
+    //     }
+    // ])
+
     return res.status(200)
         .json(SucessResponse(
             200,
-            product
+            {
+                productDetails:product,
+                reletedProducts:reletedProducts
+            },
+            ""
+            
         ))
 })
 
@@ -351,14 +397,14 @@ const WishlistProduct = asyncHandler(async (req, res) => {
     }
 
     const isAlredyInWishlist = user.wishlist.includes(productId)
-     
+
     if (isAlredyInWishlist) {
         user.wishlist = user.wishlist.filter(id => id.toString() !== productId)
-        
+
     } else {
         user.wishlist.push(productId)
     }
-     
+
     const savedUser = await user.save()
     // console.log(savedUser)
 
@@ -374,10 +420,14 @@ const getWishListProducts = asyncHandler(async (req, res) => {
         return res.status(400).json(ErrorResponse(400, "you are not authenticate"))
     }
 
-    return res.status(200).json(SucessResponse(200,user.wishlist,""))
+    return res.status(200).json(SucessResponse(200, user.wishlist, ""))
 
 })
 
+
+// const reletedProduct = asyncHandler(async(req,res)=>{
+//     const {category,} = req.query
+// })
 
 export {
     createProduct,
@@ -392,5 +442,6 @@ export {
     updatingProductDetails,
     getSearchProduct,
     WishlistProduct,
-    getWishListProducts
+    getWishListProducts,
+    // reletedProduct
 }

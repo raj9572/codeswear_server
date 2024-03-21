@@ -12,7 +12,7 @@ const stripeInstance = stripe('sk_test_51Mh7qiSFVs0Xzc6RvPqwVysDYzA3gwI2BTqO4wp2
 
 const placeOrderItems = asyncHandler(async(req,res)=>{
     const {cartItems,user} = req.body
-    console.log(req.body)
+  
     const line_items = cartItems.map((item) => {
         return {
             price_data: {
@@ -33,10 +33,8 @@ const placeOrderItems = asyncHandler(async(req,res)=>{
         }
     })
 
-   console.log("line_items",line_items)
     try {
         const session = await stripeInstance.checkout.sessions.create({
-            ui_mode: 'embedded',
             payment_method_types: ['card'],
             mode: 'payment',
             shipping_address_collection: {
@@ -52,11 +50,12 @@ const placeOrderItems = asyncHandler(async(req,res)=>{
             },
             client_reference_id:user._id,
 
-            return_url: `http://localhost:3000/return?session_id={CHECKOUT_SESSION_ID}`,
+            success_url: `http://localhost:3000/return?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `http://localhost:3000/`,
         });
 
 
-        res.json(SucessResponse(400, session.client_secret,"" ))
+        res.json(SucessResponse(400, {sessionId:session.id}," session create successfully" ))
 
     } catch (error) {
         if (error instanceof stripe.errors.StripeInvalidRequestError) {
