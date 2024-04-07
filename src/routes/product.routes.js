@@ -13,7 +13,9 @@ import {
     updatingProductDetails,
     getSearchProduct,
     WishlistProduct,
-    getWishListProducts
+    getWishListProducts,
+    createProductReview,
+    getProductReview
 } from "../controllers/product.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
 
@@ -29,6 +31,8 @@ router.route("/:productId").get(verifyJWT, getProductInfo)
 router.route("/search/:query").get(verifyJWT, getSearchProduct)
 router.route("/wishlist/:productId").get(verifyJWT, WishlistProduct)
 router.route("/getwishlist/wishlistproducts").get(verifyJWT, getWishListProducts)
+router.route("/create-review/:productId").post(verifyJWT,createProductReview)
+router.route("/get_product_review/:productId").get(verifyJWT,getProductReview)
 // router.route("/filter/categories").get(verifyJWT, getProductByCategory)
 
 

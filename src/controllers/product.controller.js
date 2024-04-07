@@ -1,5 +1,6 @@
 import { Category } from "../models/category.model.js";
 import { Product } from "../models/product.model.js";
+import { Review } from "../models/review.model.js";
 import { User } from "../models/user.model.js";
 import { ErrorResponse, SucessResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -429,6 +430,67 @@ const getWishListProducts = asyncHandler(async (req, res) => {
 //     const {category,} = req.query
 // })
 
+
+
+const createProductReview =asyncHandler(async(req,res)=>{
+     const {reviewText,rating } = req.body
+     const productId = req.params.productId
+
+     if (!reviewText || !rating) {
+        return res.status(404).json(ErrorResponse(400,"review and rating both are required"))
+        
+     }
+
+     const product = await Product.findById(productId)
+
+     if(!product){
+        return res.status(404).json(ErrorResponse(404,"product Not Found"))
+     }
+
+
+    await Review.create({
+         reviewText,rating,
+         username:req.user.username,
+         email:req.user.email,
+         profileImage:req.user?.avatar || "",
+         product:product._id
+     })
+
+
+    return res.status(201).json(SucessResponse(201,{},"review submitted successfully"))     
+})
+
+
+
+const getProductReview = asyncHandler(async(req,res)=>{
+        const productId = req.params.productId
+        const product = await Product.findById(productId)
+
+        if(!product){
+           return res.status(404).json(ErrorResponse(404,"product Not Found"))
+        }
+
+        const productReview = await Product.aggregate([
+            {
+                $match:{
+                    _id:product._id
+                }
+            },
+
+            {
+                $lookup:{
+                    from: "reviews",
+                    localField: "_id",
+                    foreignField: "product",
+                    as: "product_reviews"
+                }
+            }
+        ])
+
+        return res.status(200).json(SucessResponse(200,productReview[0].product_reviews,""))
+
+})
+
 export {
     createProduct,
     getAllProducts,
@@ -443,5 +505,7 @@ export {
     getSearchProduct,
     WishlistProduct,
     getWishListProducts,
+    createProductReview,
+    getProductReview
     // reletedProduct
 }
