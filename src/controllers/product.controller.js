@@ -482,7 +482,12 @@ const getProductReview = asyncHandler(async(req,res)=>{
                     from: "reviews",
                     localField: "_id",
                     foreignField: "product",
-                    as: "product_reviews"
+                    as: "product_reviews",
+                    pipeline:[
+                        {
+                            $sort:{createdAt:-1}
+                        }
+                    ]
                 }
             }
         ])
