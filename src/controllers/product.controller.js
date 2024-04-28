@@ -76,8 +76,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
 
 const getTopProduct = asyncHandler(async (req, res) => {
-    console.log(req.body)
-    console.log(req.file)
+    // console.log(req.body)
+    // console.log(req.file)
     return res.status(200)
         .json(SucessResponse(200, {}, "product uploaded succssfully"))
 })
@@ -257,7 +257,7 @@ const getProductInfo = asyncHandler(async (req, res) => {
 
 const getProductByCategory = asyncHandler(async (req, res) => {
     let { category, sort } = req.query
-    console.log(req.query)
+    // console.log(req.query)
     let queryObject = {}
 
     if (category) {
@@ -360,7 +360,7 @@ const updatingProductDetails = asyncHandler(async (req, res) => {
 
 
 const getSearchProduct = asyncHandler(async (req, res) => {
-    console.log(req.params.query)
+    // console.log(req.params.query)
     const searchProduct = await Product.find({
         $or: [
             { title: { $regex: req.params.query, $options: "i" } },

@@ -361,7 +361,7 @@ const deleteUser = asyncHandler(async (req,res)=>{
 
        const deletedUser = await User.findByIdAndDelete(user._id)
 
-       console.log(deletedUser)
+    //    console.log(deletedUser)
 
        return res.status(200)
        .json(SucessResponse(200,deletedUser,"user delete successfully"))

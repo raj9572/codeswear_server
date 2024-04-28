@@ -39,7 +39,7 @@ const deleteOnCloudinary = async(publicId)=>{
         
         return response
     } catch (error) {
-        console.log('error while deleting from cloudinary',error)
+        // console.log('error while deleting from cloudinary',error)
         return null
     }
 }
