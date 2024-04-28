@@ -8,7 +8,7 @@ dotenv.config();
 // dotenv.config({
 //     path:"./.env"
 // })
-
+const PORT = process.env.PORT || 8080
 
 
 connectDB()
@@ -17,8 +17,8 @@ connectDB()
         console.log("server Error",error)
         
     })
-    app.listen(process.env.PORT || 8080,()=>{
-        console.log(`server is listning on port ${process.env.PORT}`)
+    app.listen(PORT,()=>{
+        console.log(`server is listning on port ${PORT}`)
     })
 })
 .catch((err)=>{
