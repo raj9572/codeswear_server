@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import connectDB from './db/index.js'
-import {app} from './app.js'
+import { app } from './app.js'
 
 dotenv.config();
 
@@ -12,18 +12,18 @@ const PORT = process.env.PORT || 8080
 
 
 connectDB()
-.then(()=>{
-    app.on("error",(error)=>{
-        console.log("server Error",error)
-        
+    .then(() => {
+        app.on("error", (error) => {
+            console.log("server Error", error)
+
+        })
+        app.listen(PORT, () => {
+            console.log(`server is listning on port ${PORT}`)
+        })
     })
-    app.listen(PORT,()=>{
-        console.log(`server is listning on port ${PORT}`)
+    .catch((err) => {
+        console.log('MONGODB Connection FAILED:', err)
     })
-})
-.catch((err)=>{
-    console.log('MONGODB Connection FAILED:',err)
-})
 
 
 
