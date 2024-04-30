@@ -25,6 +25,10 @@ import orderRoute from './routes/order.routes.js'
 
 // router middleware
 
+app.get("/code",(req,res)=>{
+    res.send("code is coming")
+})
+
 app.use("/api/v1/users",userRouter)
 app.use("/api/v1/products",productRoute)
 app.use("/api/v1/categories",categoryRoute)
