@@ -2,18 +2,16 @@ import { Customer } from "../models/customer.model.js";
 import { Order } from "../models/order.model.js";
 import { ErrorResponse, SucessResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-// import stripe from 'stripe';
-import Stripe from 'stripe';
+import stripe from 'stripe';
 import { format } from 'date-fns'
 import { Product } from "../models/product.model.js";
 
-// const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY,{
-//     apiVersion:'2023-10-16'
-// });
+const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY,{
+    apiVersion:'2023-10-16'
+});
 
 
 
-const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const placeOrderItems = asyncHandler(async (req, res) => {
     const { cartItems, user } = req.body
