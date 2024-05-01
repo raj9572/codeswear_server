@@ -6,9 +6,7 @@ import stripe from 'stripe';
 import { format } from 'date-fns'
 import { Product } from "../models/product.model.js";
 
-const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY,{
-    apiVersion:'2023-10-16'
-});
+const stripeInstance = stripe(process.env.STRIPE_SECRET_KEY);
 
 
 

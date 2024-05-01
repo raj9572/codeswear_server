@@ -11,6 +11,11 @@ dotenv.config();
 const PORT = process.env.PORT || 8080
 
 
+
+app.get("/code",(req,res)=>{
+    res.send("code is coming")
+})
+
 connectDB()
     .then(() => {
         app.on("error", (error) => {
