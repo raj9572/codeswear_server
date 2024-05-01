@@ -39,7 +39,7 @@ const placeOrderItems = asyncHandler(async (req, res) => {
             payment_method_types: ['card'],
             mode: 'payment',
             shipping_address_collection: {
-                allowed_countries: ['IN', "US"]
+                allowed_countries: ['IN']
             },
             shipping_options: [
                 { shipping_rate: "shr_1OvcoaSFVs0Xzc6RrrhPS9GN" },
