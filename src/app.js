@@ -1,9 +1,13 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
+import dotenv from 'dotenv'
 import morgan from 'morgan'
 
 const app = express()
+
+
+dotenv.config()
 
 app.use(cors({
     origin:process.env.CLIENT_BASE_URL,
@@ -16,6 +20,7 @@ app.use(cors({
     ],
     credentials:true
 }))
+
 
 app.use(morgan('common'))
 app.use(express.json({limit:"16kb"}))
