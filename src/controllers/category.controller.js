@@ -187,6 +187,7 @@ const fetchAllCategory = asyncHandler(async(req,res)=>{
             return res.status(404).json(ErrorResponse(404,"Category not Found"))
         }
 
+
         return res.status(200).json(SucessResponse(200,category,"category Found"))
 })
 

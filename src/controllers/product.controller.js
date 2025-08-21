@@ -398,7 +398,7 @@ const WishlistProduct = asyncHandler(async (req, res) => {
     }
 
     const isAlredyInWishlist = user.wishlist.includes(productId)
-
+    
     if (isAlredyInWishlist) {
         user.wishlist = user.wishlist.filter(id => id.toString() !== productId)
 
